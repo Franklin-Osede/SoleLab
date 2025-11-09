@@ -1,13 +1,14 @@
 import { UUID } from '@shared/value-objects/UUID';
 import { ColorPalette } from '../value-objects/ColorPalette';
 import { DesignStyleValue } from '../value-objects/DesignStyle';
+import { ImageUrl } from '../value-objects/ImageUrl';
 import { DesignGenerated } from '../events/DesignGenerated';
 
 export class Design {
   private constructor(
     private id: UUID,
     private userId: UUID,
-    private imageUrl: string,
+    private imageUrl: ImageUrl,
     private colorPalette: ColorPalette,
     private style: DesignStyleValue,
     private prompt: string,
@@ -18,7 +19,7 @@ export class Design {
 
   static create(
     userId: UUID,
-    imageUrl: string,
+    imageUrl: ImageUrl,
     colorPalette: ColorPalette,
     style: DesignStyleValue,
     prompt: string
@@ -32,7 +33,7 @@ export class Design {
       prompt
     );
 
-    const event = new DesignGenerated(design.id, design.userId, design.imageUrl);
+    const event = new DesignGenerated(design.id, design.userId, design.imageUrl.getValue());
 
     return { design, event };
   }
@@ -40,7 +41,7 @@ export class Design {
   static reconstitute(
     id: UUID,
     userId: UUID,
-    imageUrl: string,
+    imageUrl: ImageUrl,
     colorPalette: ColorPalette,
     style: DesignStyleValue,
     prompt: string,
@@ -59,7 +60,7 @@ export class Design {
     return this.userId;
   }
 
-  getImageUrl(): string {
+  getImageUrl(): ImageUrl {
     return this.imageUrl;
   }
 
@@ -94,7 +95,7 @@ export class Design {
 
   isValid(): boolean {
     return (
-      this.imageUrl.length > 0 &&
+      this.imageUrl.getValue().length > 0 &&
       this.prompt.length > 0 &&
       this.colorPalette.getColors().length > 0
     );

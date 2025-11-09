@@ -5,6 +5,7 @@ import { PrismaDesignRepository } from '@infrastructure/database/repositories/Pr
 import { StableDiffusionService } from '@infrastructure/ai/StableDiffusionService';
 import { PrismaClient } from '@prisma/client';
 import { UUID } from '@shared/value-objects/UUID';
+import { ImageUrl } from '@domains/design-generation/value-objects/ImageUrl';
 
 /**
  * Integration Tests para GenerateDesignUseCase

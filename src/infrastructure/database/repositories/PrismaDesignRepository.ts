@@ -3,6 +3,7 @@ import { Design } from '@domains/design-generation/entities/Design';
 import { IDesignRepository } from '@domains/design-generation/repositories/IDesignRepository';
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
 import { DesignStyleValue } from '@domains/design-generation/value-objects/DesignStyle';
+import { ImageUrl } from '@domains/design-generation/value-objects/ImageUrl';
 import { PrismaClient } from '@prisma/client';
 
 /**
@@ -27,7 +28,7 @@ export class PrismaDesignRepository implements IDesignRepository {
     const designData = {
       id: design.getId().toString(),
       userId: design.getUserId().toString(),
-      imageUrl: design.getImageUrl(),
+      imageUrl: design.getImageUrl().getValue(),
       colors: design.getColorPalette().getColors(),
       style: design.getStyle().toString(),
       prompt: design.getPrompt(),
@@ -83,7 +84,7 @@ export class PrismaDesignRepository implements IDesignRepository {
     return Design.reconstitute(
       UUID.fromString(data.id),
       UUID.fromString(data.userId),
-      data.imageUrl,
+      ImageUrl.create(data.imageUrl),
       ColorPalette.create(data.colors),
       DesignStyleValue.create(data.style),
       data.prompt,

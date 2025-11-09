@@ -74,7 +74,7 @@ export class DesignController {
       return reply.status(200).send({
         id: design.getId().toString(),
         userId: design.getUserId().toString(),
-        imageUrl: design.getImageUrl(),
+        imageUrl: design.getImageUrl().getValue(),
         style: design.getStyle().toString(),
         colors: design.getColorPalette().getColors(),
         prompt: design.getPrompt(),
@@ -104,7 +104,7 @@ export class DesignController {
       const dtos = designs.map((design) => ({
         id: design.getId().toString(),
         userId: design.getUserId().toString(),
-        imageUrl: design.getImageUrl(),
+        imageUrl: design.getImageUrl().getValue(),
         style: design.getStyle().toString(),
         colors: design.getColorPalette().getColors(),
         prompt: design.getPrompt(),

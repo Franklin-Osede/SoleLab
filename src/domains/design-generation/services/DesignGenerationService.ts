@@ -2,6 +2,7 @@ import { UUID } from '@shared/value-objects/UUID';
 import { Design } from '../entities/Design';
 import { ColorPalette } from '../value-objects/ColorPalette';
 import { DesignStyleValue } from '../value-objects/DesignStyle';
+import { ImageUrl } from '../value-objects/ImageUrl';
 import { IDesignRepository } from '../repositories/IDesignRepository';
 import { DesignGenerated } from '../events/DesignGenerated';
 
@@ -34,21 +35,18 @@ export class DesignGenerationService {
    */
   async generateDesign(
     userId: UUID,
-    imageUrl: string,
+    imageUrl: ImageUrl,
     colorPalette: ColorPalette,
     style: DesignStyleValue,
     prompt: string
   ): Promise<{ design: Design; event: DesignGenerated }> {
     // Validación de negocio
-    if (!imageUrl || imageUrl.trim().length === 0) {
-      throw new Error('Image URL is required');
-    }
-
     if (!prompt || prompt.trim().length === 0) {
       throw new Error('Prompt is required');
     }
 
     // Crear entidad usando factory method
+    // ImageUrl ya valida la URL en su constructor
     const { design, event } = Design.create(userId, imageUrl, colorPalette, style, prompt);
 
     // Validar diseño antes de persistir

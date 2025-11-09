@@ -4,6 +4,7 @@ import { UUID } from '@shared/value-objects/UUID';
 import { Design } from '@domains/design-generation/entities/Design';
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
 import { DesignStyleValue } from '@domains/design-generation/value-objects/DesignStyle';
+import { ImageUrl } from '@domains/design-generation/value-objects/ImageUrl';
 
 /**
  * Integration Tests para PrismaDesignRepository
@@ -53,7 +54,7 @@ describe('PrismaDesignRepository Integration', () => {
       const userId = UUID.create();
       const { design } = Design.create(
         userId,
-        'https://example.com/design.jpg',
+        ImageUrl.create('https://example.com/design.jpg'),
         ColorPalette.create(['#FF0000', '#00FF00']),
         DesignStyleValue.create('futuristic'),
         'futuristic sneaker prompt'
@@ -70,7 +71,7 @@ describe('PrismaDesignRepository Integration', () => {
       expect(saved).toBeDefined();
       expect(saved?.id).toBe(design.getId().toString());
       expect(saved?.userId).toBe(design.getUserId().toString());
-      expect(saved?.imageUrl).toBe(design.getImageUrl());
+      expect(saved?.imageUrl).toBe(design.getImageUrl().getValue());
       expect(saved?.colors).toEqual(design.getColorPalette().getColors());
       expect(saved?.style).toBe(design.getStyle().toString());
     });
@@ -80,7 +81,7 @@ describe('PrismaDesignRepository Integration', () => {
       const userId = UUID.create();
       const { design: originalDesign } = Design.create(
         userId,
-        'https://example.com/design1.jpg',
+        ImageUrl.create('https://example.com/design1.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'original prompt'
@@ -124,7 +125,7 @@ describe('PrismaDesignRepository Integration', () => {
       // Assert
       expect(found).toBeDefined();
       expect(found?.getId().equals(design.getId())).toBe(true);
-      expect(found?.getImageUrl()).toBe(design.getImageUrl());
+      expect(found?.getImageUrl().equals(design.getImageUrl())).toBe(true);
       expect(found?.getColorPalette().equals(design.getColorPalette())).toBe(true);
     });
 
@@ -148,7 +149,7 @@ describe('PrismaDesignRepository Integration', () => {
 
       const { design: design1 } = Design.create(
         userId1,
-        'https://example.com/design1.jpg',
+        ImageUrl.create('https://example.com/design1.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'prompt 1'
@@ -156,7 +157,7 @@ describe('PrismaDesignRepository Integration', () => {
 
       const { design: design2 } = Design.create(
         userId1,
-        'https://example.com/design2.jpg',
+        ImageUrl.create('https://example.com/design2.jpg'),
         ColorPalette.create(['#00FF00']),
         DesignStyleValue.create('retro'),
         'prompt 2'
@@ -164,7 +165,7 @@ describe('PrismaDesignRepository Integration', () => {
 
       const { design: design3 } = Design.create(
         userId2,
-        'https://example.com/design3.jpg',
+        ImageUrl.create('https://example.com/design3.jpg'),
         ColorPalette.create(['#0000FF']),
         DesignStyleValue.create('minimalist'),
         'prompt 3'
@@ -204,7 +205,7 @@ describe('PrismaDesignRepository Integration', () => {
 
       const { design: design1 } = Design.create(
         userId1,
-        'https://example.com/design1.jpg',
+        ImageUrl.create('https://example.com/design1.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'prompt 1'
@@ -212,7 +213,7 @@ describe('PrismaDesignRepository Integration', () => {
 
       const { design: design2 } = Design.create(
         userId2,
-        'https://example.com/design2.jpg',
+        ImageUrl.create('https://example.com/design2.jpg'),
         ColorPalette.create(['#00FF00']),
         DesignStyleValue.create('retro'),
         'prompt 2'
@@ -242,7 +243,7 @@ describe('PrismaDesignRepository Integration', () => {
 
       const { design: originalDesign } = Design.create(
         userId,
-        imageUrl,
+        ImageUrl.create(imageUrl),
         ColorPalette.create(colors),
         DesignStyleValue.create(style),
         prompt
@@ -258,7 +259,7 @@ describe('PrismaDesignRepository Integration', () => {
       expect(retrievedDesign).toBeDefined();
       expect(retrievedDesign?.getId().equals(originalDesign.getId())).toBe(true);
       expect(retrievedDesign?.getUserId().equals(originalDesign.getUserId())).toBe(true);
-      expect(retrievedDesign?.getImageUrl()).toBe(originalDesign.getImageUrl());
+      expect(retrievedDesign?.getImageUrl().equals(originalDesign.getImageUrl())).toBe(true);
       expect(retrievedDesign?.getColorPalette().equals(originalDesign.getColorPalette())).toBe(true);
       expect(retrievedDesign?.getStyle().equals(originalDesign.getStyle())).toBe(true);
       expect(retrievedDesign?.getPrompt()).toBe(originalDesign.getPrompt());

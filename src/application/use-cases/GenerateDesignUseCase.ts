@@ -2,6 +2,7 @@ import { UUID } from '@shared/value-objects/UUID';
 import { Design } from '@domains/design-generation/entities/Design';
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
 import { DesignStyleValue } from '@domains/design-generation/value-objects/DesignStyle';
+import { ImageUrl } from '@domains/design-generation/value-objects/ImageUrl';
 import { DesignGenerationService } from '@domains/design-generation/services/DesignGenerationService';
 import { PromptBuilderService } from '@domains/design-generation/services/PromptBuilderService';
 import { IAIService } from '@infrastructure/ai/IAIService';
@@ -70,7 +71,8 @@ export class GenerateDesignUseCase {
     const negativePrompt = this.promptBuilderService.buildNegativePrompt();
 
     // 3. Generar imagen con IA (infraestructura)
-    const imageUrl = await this.aiService.generateImage(optimizedPrompt, negativePrompt);
+    const imageUrlString = await this.aiService.generateImage(optimizedPrompt, negativePrompt);
+    const imageUrl = ImageUrl.create(imageUrlString);
 
     // 4. Crear diseño usando servicio de dominio
     const { design, event } = await this.designGenerationService.generateDesign(
@@ -93,7 +95,7 @@ export class GenerateDesignUseCase {
   private toDTO(design: Design): GenerateDesignResponse {
     return {
       designId: design.getId().toString(),
-      imageUrl: design.getImageUrl(),
+      imageUrl: design.getImageUrl().getValue(),
       prompt: design.getPrompt(),
       style: design.getStyle().toString(),
       colors: design.getColorPalette().getColors(),

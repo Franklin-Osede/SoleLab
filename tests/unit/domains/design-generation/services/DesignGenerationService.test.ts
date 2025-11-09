@@ -4,6 +4,7 @@ import { DesignGenerationService } from '@domains/design-generation/services/Des
 import { IDesignRepository } from '@domains/design-generation/repositories/IDesignRepository';
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
 import { DesignStyleValue } from '@domains/design-generation/value-objects/DesignStyle';
+import { ImageUrl } from '@domains/design-generation/value-objects/ImageUrl';
 
 describe('DesignGenerationService', () => {
   let service: DesignGenerationService;
@@ -25,7 +26,7 @@ describe('DesignGenerationService', () => {
     it('should generate and save design', async () => {
       // Arrange
       const userId = UUID.create();
-      const imageUrl = 'https://example.com/design.jpg';
+      const imageUrl = ImageUrl.create('https://example.com/design.jpg');
       const colorPalette = ColorPalette.create(['#FF0000']);
       const style = DesignStyleValue.create('futuristic');
       const prompt = 'futuristic sneaker';
@@ -42,7 +43,7 @@ describe('DesignGenerationService', () => {
       // Assert
       expect(design).toBeDefined();
       expect(design.getUserId().equals(userId)).toBe(true);
-      expect(design.getImageUrl()).toBe(imageUrl);
+      expect(design.getImageUrl().equals(imageUrl)).toBe(true);
       expect(mockRepository.save).toHaveBeenCalledWith(design);
       expect(event).toBeDefined();
       expect(event.userId.equals(userId)).toBe(true);
@@ -55,9 +56,16 @@ describe('DesignGenerationService', () => {
       const style = DesignStyleValue.create('futuristic');
 
       // Act & Assert
+      // ImageUrl validation happens in constructor, so we test with invalid URL
       await expect(
-        service.generateDesign(userId, '', colorPalette, style, 'prompt')
-      ).rejects.toThrow('Image URL is required');
+        service.generateDesign(
+          userId,
+          ImageUrl.create('https://example.com/design.jpg'), // Valid URL
+          colorPalette,
+          style,
+          ''
+        )
+      ).rejects.toThrow('Prompt is required');
     });
 
     it('should throw error when prompt is empty', async () => {
@@ -68,7 +76,13 @@ describe('DesignGenerationService', () => {
 
       // Act & Assert
       await expect(
-        service.generateDesign(userId, 'https://example.com/image.jpg', colorPalette, style, '')
+        service.generateDesign(
+          userId,
+          ImageUrl.create('https://example.com/image.jpg'),
+          colorPalette,
+          style,
+          ''
+        )
       ).rejects.toThrow('Prompt is required');
     });
   });
@@ -107,7 +121,7 @@ describe('DesignGenerationService', () => {
       const mockDesign = Design.reconstitute(
         designId,
         userId,
-        'https://example.com/design.jpg',
+        ImageUrl.create('https://example.com/design.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'prompt'
