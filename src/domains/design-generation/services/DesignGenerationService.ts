@@ -94,5 +94,17 @@ export class DesignGenerationService {
 
     return this.designRepository.findAllPaginated(page, pageSize);
   }
+
+  /**
+   * Busca diseños con filtros
+   */
+  async searchDesigns(filters: {
+    style?: string;
+    userId?: UUID;
+    createdAfter?: Date;
+    createdBefore?: Date;
+  }): Promise<Design[]> {
+    return this.designRepository.findByFilters(filters);
+  }
 }
 

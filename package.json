@@ -26,7 +26,9 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@fastify/compress": "^8.3.0",
     "@fastify/cors": "^8.4.0",
+    "@fastify/helmet": "^13.0.2",
     "@prisma/client": "^5.7.0",
     "@types/three": "^0.181.0",
     "dotenv": "^16.3.1",

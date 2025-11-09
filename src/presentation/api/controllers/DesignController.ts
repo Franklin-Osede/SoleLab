@@ -107,14 +107,49 @@ export class DesignController {
 
   /**
    * GET /api/v1/designs
-   * Lista todos los diseños (con paginación)
+   * Lista todos los diseños (con paginación y filtros)
    */
   async getAllDesigns(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const query = request.query as { page?: string; pageSize?: string };
+      const query = request.query as {
+        page?: string;
+        pageSize?: string;
+        style?: string;
+        userId?: string;
+        createdAfter?: string;
+        createdBefore?: string;
+      };
+
       const page = query.page ? parseInt(query.page, 10) : 1;
       const pageSize = query.pageSize ? parseInt(query.pageSize, 10) : 10;
 
+      // Si hay filtros, usar búsqueda filtrada
+      if (query.style || query.userId || query.createdAfter || query.createdBefore) {
+        const filters: any = {};
+        if (query.style) filters.style = query.style;
+        if (query.userId) filters.userId = UUID.fromString(query.userId);
+        if (query.createdAfter) filters.createdAfter = new Date(query.createdAfter);
+        if (query.createdBefore) filters.createdBefore = new Date(query.createdBefore);
+
+        const designs = await this.designGenerationService.searchDesigns(filters);
+        
+        const dtos = designs.map((design) => ({
+          id: design.getId().toString(),
+          userId: design.getUserId().toString(),
+          imageUrl: design.getImageUrl().getValue(),
+          style: design.getStyle().toString(),
+          colors: design.getColorPalette().getColors(),
+          prompt: design.getPrompt(),
+          createdAt: design.getCreatedAt(),
+        }));
+
+        return reply.status(200).send({
+          data: dtos,
+          count: dtos.length,
+        });
+      }
+
+      // Sin filtros, usar paginación
       const { designs, total } = await this.designGenerationService.getAllDesignsPaginated(page, pageSize);
       
       const dtos = designs.map((design) => ({

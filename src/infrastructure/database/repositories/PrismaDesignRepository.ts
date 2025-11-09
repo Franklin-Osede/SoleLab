@@ -93,6 +93,40 @@ export class PrismaDesignRepository implements IDesignRepository {
     };
   }
 
+  async findByFilters(filters: {
+    style?: string;
+    userId?: UUID;
+    createdAfter?: Date;
+    createdBefore?: Date;
+  }): Promise<Design[]> {
+    const where: any = {};
+
+    if (filters.style) {
+      where.style = filters.style;
+    }
+
+    if (filters.userId) {
+      where.userId = filters.userId.toString();
+    }
+
+    if (filters.createdAfter || filters.createdBefore) {
+      where.createdAt = {};
+      if (filters.createdAfter) {
+        where.createdAt.gte = filters.createdAfter;
+      }
+      if (filters.createdBefore) {
+        where.createdAt.lte = filters.createdBefore;
+      }
+    }
+
+    const designsData = await this.prisma.design.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return designsData.map((data) => this.toDomainEntity(data));
+  }
+
   /**
    * Convierte modelo de Prisma a entidad de dominio
    * 

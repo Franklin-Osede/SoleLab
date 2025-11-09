@@ -71,18 +71,22 @@ export async function designRoutes(fastify: FastifyInstance) {
     }
   );
 
-  // GET /api/v1/designs - Listar todos los diseños (con paginación)
+  // GET /api/v1/designs - Listar todos los diseños (con paginación y filtros)
   fastify.get(
     '/',
     {
       schema: {
-        description: 'List all designs with pagination',
+        description: 'List all designs with pagination and filters',
         tags: ['designs'],
         querystring: {
           type: 'object',
           properties: {
             page: { type: 'number', minimum: 1, default: 1 },
             pageSize: { type: 'number', minimum: 1, maximum: 100, default: 10 },
+            style: { type: 'string', enum: ['futuristic', 'retro', 'minimalist', 'sporty', 'luxury', 'streetwear'] },
+            userId: { type: 'string', format: 'uuid' },
+            createdAfter: { type: 'string', format: 'date-time' },
+            createdBefore: { type: 'string', format: 'date-time' },
           },
         },
       },

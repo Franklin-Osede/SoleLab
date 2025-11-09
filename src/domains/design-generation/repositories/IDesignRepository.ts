@@ -7,6 +7,12 @@ export interface IDesignRepository {
   findByUserId(userId: UUID): Promise<Design[]>;
   findAll(): Promise<Design[]>;
   findAllPaginated(page: number, pageSize: number): Promise<{ designs: Design[]; total: number }>;
+  findByFilters(filters: {
+    style?: string;
+    userId?: UUID;
+    createdAfter?: Date;
+    createdBefore?: Date;
+  }): Promise<Design[]>;
 }
 
 

@@ -1,11 +1,16 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import compress from '@fastify/compress';
+import helmet from '@fastify/helmet';
 import { designRoutes } from './routes/design.routes';
 import { errorHandler } from './middleware/error-handler.middleware';
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';
 import { loggingMiddleware } from './middleware/logging.middleware';
 import { requestIdMiddleware } from './middleware/request-id.middleware';
+import { performanceMiddleware } from './middleware/performance.middleware';
 import { setupSwagger } from './swagger/swagger.config';
+import { container } from '../../infrastructure/dependency-injection/container';
+import { HealthController } from './controllers/HealthController';
 
 /**
  * Servidor API REST con Fastify
@@ -23,6 +28,14 @@ export async function createServer() {
     logger: process.env.NODE_ENV === 'development',
   });
 
+  // Security headers (Helmet)
+  await server.register(helmet, {
+    contentSecurityPolicy: process.env.NODE_ENV === 'production',
+  });
+
+  // Compression (gzip/brotli)
+  await server.register(compress);
+
   // CORS (configurado para Angular)
   await server.register(cors, {
     origin: process.env.FRONTEND_URL || 'http://localhost:4200', // Angular default port
@@ -34,14 +47,19 @@ export async function createServer() {
     await setupSwagger(server);
   }
 
-  // Health check (sin rate limit)
-  server.get('/health', async () => {
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  });
+  // Health checks
+  const healthController = new HealthController(container.get('PrismaClient'));
+  server.get('/health', (request, reply) => healthController.liveness(request, reply));
+  server.get('/health/ready', (request, reply) => healthController.readiness(request, reply));
 
   // Request ID middleware (primero, para tracking)
   server.addHook('onRequest', async (request, reply) => {
     await requestIdMiddleware(request, reply);
+  });
+
+  // Performance middleware (medir tiempo de respuesta)
+  server.addHook('onRequest', async (request, reply) => {
+    await performanceMiddleware(request, reply);
   });
 
   // Logging middleware (aplicar a todas las rutas)
@@ -51,7 +69,7 @@ export async function createServer() {
 
   // Rate limiting (aplicar a todas las rutas excepto health)
   server.addHook('onRequest', async (request, reply) => {
-    if (request.url !== '/health') {
+    if (request.url !== '/health' && !request.url.startsWith('/health/')) {
       await rateLimitMiddleware(request, reply);
     }
   });
