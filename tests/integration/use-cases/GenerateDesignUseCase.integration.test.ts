@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { GenerateDesignUseCase } from '@application/use-cases/GenerateDesignUseCase';
 import { DesignGenerationService } from '@domains/design-generation/services/DesignGenerationService';
 import { PromptBuilderService } from '@domains/design-generation/services/PromptBuilderService';

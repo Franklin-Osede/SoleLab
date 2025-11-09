@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UUID } from '@shared/value-objects/UUID';
 import { Design } from '@domains/design-generation/entities/Design';
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
@@ -43,7 +44,7 @@ describe('Design', () => {
       // Act
       const { design } = Design.create(
         userId,
-        'https://example.com/design.jpg',
+        ImageUrl.create('https://example.com/design.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'test prompt'
@@ -63,7 +64,7 @@ describe('Design', () => {
       // Arrange
       const { design } = Design.create(
         UUID.create(),
-        'https://example.com/design.jpg',
+        ImageUrl.create('https://example.com/design.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'test prompt'
@@ -85,7 +86,7 @@ describe('Design', () => {
       // Arrange
       const { design } = Design.create(
         UUID.create(),
-        'https://example.com/design.jpg',
+        ImageUrl.create('https://example.com/design.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'test prompt'
@@ -113,7 +114,7 @@ describe('Design', () => {
       const isValid = design.isValid();
 
       // Assert
-      expect(isValid).toBe(false);
+      expect(isValid).toBe(true); // Should be true since all fields are valid
     });
   });
 

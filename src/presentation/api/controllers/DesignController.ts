@@ -25,33 +25,21 @@ export class DesignController {
    */
   async generateDesign(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const body = request.body as {
-        userId: string;
-        basePrompt: string;
-        style: string;
-        colors: string[];
-      };
-
-      // Validación básica (puedes usar Zod para más validación)
-      if (!body.userId || !body.basePrompt || !body.style || !body.colors) {
-        return reply.status(400).send({
-          error: 'Missing required fields: userId, basePrompt, style, colors',
-        });
-      }
+      // Los datos ya están validados por el middleware
+      const validated = (request as any).validated;
 
       // Llamar caso de uso
       const result = await this.generateDesignUseCase.execute({
-        userId: body.userId,
-        basePrompt: body.basePrompt,
-        style: body.style,
-        colors: body.colors,
+        userId: validated.userId,
+        basePrompt: validated.basePrompt,
+        style: validated.style,
+        colors: validated.colors,
       });
 
       return reply.status(201).send(result);
     } catch (error) {
-      return reply.status(500).send({
-        error: error instanceof Error ? error.message : 'Internal server error',
-      });
+      // El error handler centralizado se encargará
+      throw error;
     }
   }
 
@@ -61,13 +49,14 @@ export class DesignController {
    */
   async getDesignById(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const params = request.params as { id: string };
-      const designId = UUID.fromString(params.id);
+      // Los datos ya están validados por el middleware
+      const validated = (request as any).validated;
+      const designId = UUID.fromString(validated.id);
 
       const design = await this.designGenerationService.getDesignById(designId);
 
       if (!design) {
-        return reply.status(404).send({ error: 'Design not found' });
+        throw new Error('Design not found');
       }
 
       // Convertir a DTO
@@ -83,9 +72,7 @@ export class DesignController {
         createdAt: design.getCreatedAt(),
       });
     } catch (error) {
-      return reply.status(500).send({
-        error: error instanceof Error ? error.message : 'Internal server error',
-      });
+      throw error;
     }
   }
 
@@ -95,8 +82,9 @@ export class DesignController {
    */
   async getUserDesigns(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const params = request.params as { userId: string };
-      const userId = UUID.fromString(params.userId);
+      // Los datos ya están validados por el middleware
+      const validated = (request as any).validated;
+      const userId = UUID.fromString(validated.userId);
 
       const designs = await this.designGenerationService.getUserDesigns(userId);
 
@@ -113,9 +101,7 @@ export class DesignController {
 
       return reply.status(200).send(dtos);
     } catch (error) {
-      return reply.status(500).send({
-        error: error instanceof Error ? error.message : 'Internal server error',
-      });
+      throw error;
     }
   }
 
@@ -125,12 +111,21 @@ export class DesignController {
    */
   async getAllDesigns(request: FastifyRequest, reply: FastifyReply) {
     try {
-      // TODO: Implementar en servicio
-      return reply.status(200).send({ message: 'Not implemented yet' });
+      const designs = await this.designGenerationService.getAllDesigns();
+      
+      const dtos = designs.map((design) => ({
+        id: design.getId().toString(),
+        userId: design.getUserId().toString(),
+        imageUrl: design.getImageUrl().getValue(),
+        style: design.getStyle().toString(),
+        colors: design.getColorPalette().getColors(),
+        prompt: design.getPrompt(),
+        createdAt: design.getCreatedAt(),
+      }));
+
+      return reply.status(200).send(dtos);
     } catch (error) {
-      return reply.status(500).send({
-        error: error instanceof Error ? error.message : 'Internal server error',
-      });
+      throw error;
     }
   }
 }

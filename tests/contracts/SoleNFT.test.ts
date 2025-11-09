@@ -1,9 +1,10 @@
+/// <reference types="jest" />
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { SoleNFT } from '../typechain-types';
+// import { SoleNFT } from '../typechain-types'; // TODO: Generate after compiling
 
 describe('SoleNFT', () => {
-  let soleNFT: SoleNFT;
+  let soleNFT: any; // SoleNFT type will be available after compiling
   let owner: any;
   let user1: any;
   let user2: any;
@@ -113,11 +114,11 @@ describe('SoleNFT', () => {
 
       const tx = await soleNFT.withdraw();
       const receipt = await tx.wait();
-      const gasUsed = receipt!.gasUsed * receipt!.gasPrice;
+      const gasUsed = receipt!.gasUsed * (receipt!.gasPrice || 0n);
 
       const balanceAfter = await ethers.provider.getBalance(owner.address);
 
-      expect(balanceAfter).to.equal(balanceBefore + contractBalance - gasUsed);
+      expect(balanceAfter).to.equal(balanceBefore + contractBalance - BigInt(gasUsed.toString()));
     });
 
     it('should reject withdrawal when no funds', async () => {

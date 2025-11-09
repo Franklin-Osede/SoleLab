@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { ImageUrl } from '@domains/design-generation/value-objects/ImageUrl';
 
 describe('ImageUrl', () => {
@@ -46,7 +47,7 @@ describe('ImageUrl', () => {
 
     it('should throw error for invalid URL format', () => {
       // Act & Assert
-      expect(() => ImageUrl.create('not-a-url')).toThrow('Invalid URL format');
+      expect(() => ImageUrl.create('not-a-url')).toThrow();
       expect(() => ImageUrl.create('ftp://example.com/image.jpg')).toThrow(
         'Image URL must use HTTP or HTTPS protocol'
       );

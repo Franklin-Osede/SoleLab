@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { PrismaClient } from '@prisma/client';
 import { PrismaDesignRepository } from '@infrastructure/database/repositories/PrismaDesignRepository';
 import { UUID } from '@shared/value-objects/UUID';
@@ -111,7 +112,7 @@ describe('PrismaDesignRepository Integration', () => {
       const userId = UUID.create();
       const { design } = Design.create(
         userId,
-        'https://example.com/design.jpg',
+        ImageUrl.create('https://example.com/design.jpg'),
         ColorPalette.create(['#FF0000']),
         DesignStyleValue.create('futuristic'),
         'test prompt'

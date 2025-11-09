@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { PromptBuilderService } from '@domains/design-generation/services/PromptBuilderService';
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
 import { DesignStyleValue, DesignStyle } from '@domains/design-generation/value-objects/DesignStyle';

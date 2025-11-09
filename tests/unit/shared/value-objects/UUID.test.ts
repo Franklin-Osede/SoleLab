@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import { UUID } from '@shared/value-objects/UUID';
 
 describe('UUID', () => {

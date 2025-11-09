@@ -73,5 +73,12 @@ export class DesignGenerationService {
   async getDesignById(designId: UUID): Promise<Design | null> {
     return this.designRepository.findById(designId);
   }
+
+  /**
+   * Obtiene todos los diseños
+   */
+  async getAllDesigns(): Promise<Design[]> {
+    return this.designRepository.findAll();
+  }
 }
 

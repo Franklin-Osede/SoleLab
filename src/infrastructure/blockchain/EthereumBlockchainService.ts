@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { SoleNFT__factory } from '../../../../typechain-types';
+// import { SoleNFT__factory } from '../../../../typechain-types'; // TODO: Generate after compiling contracts
 
 /**
  * Servicio: EthereumBlockchainService
@@ -48,11 +48,25 @@ export class EthereumBlockchainService {
     }
 
     // Crear instancia del contrato
-    const contractFactory = SoleNFT__factory.connect(
+    // TODO: Usar SoleNFT__factory después de compilar contratos
+    // const contractFactory = SoleNFT__factory.connect(
+    //   config.contractAddress,
+    //   this.signer || this.provider
+    // );
+    // this.contract = contractFactory;
+    
+    // Temporal: usar Contract directamente hasta compilar
+    this.contract = new ethers.Contract(
       config.contractAddress,
+      [
+        'function mint(address to, string memory tokenURI) external payable returns (uint256)',
+        'function ownerOf(uint256 tokenId) external view returns (address)',
+        'function getCreator(uint256 tokenId) external view returns (address)',
+        'function mintingFee() external view returns (uint256)',
+        'event DesignMinted(uint256 indexed tokenId, address indexed creator, string metadataURI)',
+      ],
       this.signer || this.provider
     );
-    this.contract = contractFactory;
   }
 
   /**

@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { ColorPalette } from '@domains/design-generation/value-objects/ColorPalette';
 
 describe('ColorPalette', () => {

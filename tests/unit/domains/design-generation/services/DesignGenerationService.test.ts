@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import { UUID } from '@shared/value-objects/UUID';
 import { Design } from '@domains/design-generation/entities/Design';
 import { DesignGenerationService } from '@domains/design-generation/services/DesignGenerationService';
@@ -95,7 +96,7 @@ describe('DesignGenerationService', () => {
         Design.reconstitute(
           UUID.create(),
           userId,
-          'https://example.com/design1.jpg',
+          ImageUrl.create('https://example.com/design1.jpg'),
           ColorPalette.create(['#FF0000']),
           DesignStyleValue.create('futuristic'),
           'prompt 1'
