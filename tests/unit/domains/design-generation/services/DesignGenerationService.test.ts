@@ -18,6 +18,7 @@ describe('DesignGenerationService', () => {
       findById: jest.fn(),
       findByUserId: jest.fn(),
       findAll: jest.fn(),
+      findAllPaginated: jest.fn(),
     };
 
     service = new DesignGenerationService(mockRepository);
