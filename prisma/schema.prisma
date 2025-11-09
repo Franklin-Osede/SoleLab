@@ -1,0 +1,77 @@
+// Prisma Schema para SoleLab
+// 
+// RAZÓN DE DISEÑO:
+// - Schema separado de modelos de dominio
+// - Solo para persistencia, no contiene lógica de negocio
+// - Fácil migrar a otra DB cambiando provider
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Design (persistencia)
+// NOTA: Este es el modelo de persistencia, NO la entidad de dominio
+// La entidad de dominio está en src/domains/design-generation/entities/Design.ts
+model Design {
+  id          String   @id @default(uuid())
+  userId      String
+  imageUrl    String
+  colors      String[] // Array de colores hex
+  style       String   // DesignStyle enum como string
+  prompt      String
+  metadataUri String?  // IPFS URI para NFT
+  tokenId     Int?     // Token ID del NFT
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones (futuro)
+  // user        User     @relation(fields: [userId], references: [id])
+  // listings    Listing[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("designs")
+}
+
+// Modelo de User (futuro)
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String   @unique
+  walletAddress String? // Dirección de wallet blockchain
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  // designs    Design[]
+  // listings   Listing[]
+
+  @@map("users")
+}
+
+// Modelo de Listing (futuro - Marketplace)
+model Listing {
+  id          String   @id @default(uuid())
+  designId    String
+  sellerId    String
+  price       String   // Precio en wei (string para precisión)
+  currency    String   @default("ETH")
+  status      String   @default("active") // active, sold, cancelled
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  // design     Design   @relation(fields: [designId], references: [id])
+  // seller     User     @relation(fields: [sellerId], references: [id])
+
+  @@index([designId])
+  @@index([sellerId])
+  @@index([status])
+  @@map("listings")
+}
+

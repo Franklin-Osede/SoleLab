@@ -1,0 +1,79 @@
+import { UUID } from '@shared/value-objects/UUID';
+import { Design } from '../entities/Design';
+import { ColorPalette } from '../value-objects/ColorPalette';
+import { DesignStyleValue } from '../value-objects/DesignStyle';
+import { IDesignRepository } from '../repositories/IDesignRepository';
+import { DesignGenerated } from '../events/DesignGenerated';
+
+/**
+ * Servicio de Dominio: DesignGenerationService
+ * 
+ * RAZÓN DE DISEÑO:
+ * - Encapsula la lógica de negocio para generar diseños
+ * - No depende de infraestructura (IA, storage) - solo interfaces
+ * - Orquesta la creación de entidades y emisión de eventos
+ * - Sigue el principio de Single Responsibility
+ * 
+ * PRINCIPIOS DDD:
+ * - Ubicado en Domain Layer (sin dependencias externas)
+ * - Usa interfaces de repositorios (Dependency Inversion)
+ * - Emite eventos de dominio para comunicación asíncrona
+ */
+export class DesignGenerationService {
+  constructor(private designRepository: IDesignRepository) {}
+
+  /**
+   * Genera un nuevo diseño
+   * 
+   * @param userId - ID del usuario que genera el diseño
+   * @param imageUrl - URL de la imagen generada (viene de infraestructura)
+   * @param colorPalette - Paleta de colores del diseño
+   * @param style - Estilo del diseño
+   * @param prompt - Prompt usado para generar
+   * @returns El diseño creado y el evento emitido
+   */
+  async generateDesign(
+    userId: UUID,
+    imageUrl: string,
+    colorPalette: ColorPalette,
+    style: DesignStyleValue,
+    prompt: string
+  ): Promise<{ design: Design; event: DesignGenerated }> {
+    // Validación de negocio
+    if (!imageUrl || imageUrl.trim().length === 0) {
+      throw new Error('Image URL is required');
+    }
+
+    if (!prompt || prompt.trim().length === 0) {
+      throw new Error('Prompt is required');
+    }
+
+    // Crear entidad usando factory method
+    const { design, event } = Design.create(userId, imageUrl, colorPalette, style, prompt);
+
+    // Validar diseño antes de persistir
+    if (!design.isValid()) {
+      throw new Error('Generated design is invalid');
+    }
+
+    // Persistir (el repositorio se encarga de la implementación)
+    await this.designRepository.save(design);
+
+    return { design, event };
+  }
+
+  /**
+   * Obtiene todos los diseños de un usuario
+   */
+  async getUserDesigns(userId: UUID): Promise<Design[]> {
+    return this.designRepository.findByUserId(userId);
+  }
+
+  /**
+   * Obtiene un diseño por ID
+   */
+  async getDesignById(designId: UUID): Promise<Design | null> {
+    return this.designRepository.findById(designId);
+  }
+}
+
