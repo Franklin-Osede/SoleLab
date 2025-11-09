@@ -2,32 +2,18 @@
  * Interface: IAIService
  * 
  * RAZÓN DE DISEÑO:
- * - Define contrato para servicios de IA sin acoplar a implementación específica
- * - Permite cambiar de Stable Diffusion a otra IA sin modificar dominio
+ * - Abstracción para servicios de IA
+ * - Permite cambiar implementación (Stable Diffusion, DALL-E, etc.)
  * - Facilita testing con mocks
- * - Sigue Dependency Inversion Principle
- * 
- * UBICACIÓN:
- * - En Infrastructure Layer porque es una preocupación técnica
- * - Pero la interface está aquí para que Domain/Application la usen
+ * - Dependency Inversion Principle
  */
 export interface IAIService {
   /**
-   * Genera una imagen usando IA
+   * Genera una imagen basada en un prompt
    * 
-   * @param prompt - Prompt positivo
-   * @param negativePrompt - Prompt negativo (lo que no queremos)
+   * @param prompt - Prompt para generar la imagen
+   * @param negativePrompt - Prompt negativo (qué evitar)
    * @returns URL de la imagen generada
    */
-  generateImage(prompt: string, negativePrompt: string): Promise<string>;
-
-  /**
-   * Genera múltiples variaciones de una imagen
-   * 
-   * @param prompt - Prompt base
-   * @param count - Número de variaciones
-   * @returns URLs de las imágenes generadas
-   */
-  generateVariations(prompt: string, count: number): Promise<string[]>;
+  generateImage(prompt: string, negativePrompt?: string): Promise<string>;
 }
-

@@ -71,9 +71,25 @@ export async function designRoutes(fastify: FastifyInstance) {
     }
   );
 
-  // GET /api/v1/designs - Listar todos los diseños
-  fastify.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-    return designController.getAllDesigns(request, reply);
-  });
+  // GET /api/v1/designs - Listar todos los diseños (con paginación)
+  fastify.get(
+    '/',
+    {
+      schema: {
+        description: 'List all designs with pagination',
+        tags: ['designs'],
+        querystring: {
+          type: 'object',
+          properties: {
+            page: { type: 'number', minimum: 1, default: 1 },
+            pageSize: { type: 'number', minimum: 1, maximum: 100, default: 10 },
+          },
+        },
+      },
+    },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      return designController.getAllDesigns(request, reply);
+    }
+  );
 }
 

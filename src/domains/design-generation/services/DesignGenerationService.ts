@@ -80,5 +80,19 @@ export class DesignGenerationService {
   async getAllDesigns(): Promise<Design[]> {
     return this.designRepository.findAll();
   }
+
+  /**
+   * Obtiene diseños con paginación
+   */
+  async getAllDesignsPaginated(page: number, pageSize: number): Promise<{ designs: Design[]; total: number }> {
+    if (page < 1) {
+      throw new Error('Page must be greater than 0');
+    }
+    if (pageSize < 1 || pageSize > 100) {
+      throw new Error('Page size must be between 1 and 100');
+    }
+
+    return this.designRepository.findAllPaginated(page, pageSize);
+  }
 }
 

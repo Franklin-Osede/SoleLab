@@ -107,11 +107,15 @@ export class DesignController {
 
   /**
    * GET /api/v1/designs
-   * Lista todos los diseños
+   * Lista todos los diseños (con paginación)
    */
   async getAllDesigns(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const designs = await this.designGenerationService.getAllDesigns();
+      const query = request.query as { page?: string; pageSize?: string };
+      const page = query.page ? parseInt(query.page, 10) : 1;
+      const pageSize = query.pageSize ? parseInt(query.pageSize, 10) : 10;
+
+      const { designs, total } = await this.designGenerationService.getAllDesignsPaginated(page, pageSize);
       
       const dtos = designs.map((design) => ({
         id: design.getId().toString(),
@@ -123,7 +127,15 @@ export class DesignController {
         createdAt: design.getCreatedAt(),
       }));
 
-      return reply.status(200).send(dtos);
+      return reply.status(200).send({
+        data: dtos,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize),
+        },
+      });
     } catch (error) {
       throw error;
     }

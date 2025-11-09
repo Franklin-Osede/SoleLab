@@ -75,6 +75,24 @@ export class PrismaDesignRepository implements IDesignRepository {
     return designsData.map((data) => this.toDomainEntity(data));
   }
 
+  async findAllPaginated(page: number, pageSize: number): Promise<{ designs: Design[]; total: number }> {
+    const skip = (page - 1) * pageSize;
+
+    const [designsData, total] = await Promise.all([
+      this.prisma.design.findMany({
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.design.count(),
+    ]);
+
+    return {
+      designs: designsData.map((data) => this.toDomainEntity(data)),
+      total,
+    };
+  }
+
   /**
    * Convierte modelo de Prisma a entidad de dominio
    * 

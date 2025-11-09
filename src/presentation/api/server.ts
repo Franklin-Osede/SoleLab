@@ -4,6 +4,7 @@ import { designRoutes } from './routes/design.routes';
 import { errorHandler } from './middleware/error-handler.middleware';
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';
 import { loggingMiddleware } from './middleware/logging.middleware';
+import { requestIdMiddleware } from './middleware/request-id.middleware';
 import { setupSwagger } from './swagger/swagger.config';
 
 /**
@@ -36,6 +37,11 @@ export async function createServer() {
   // Health check (sin rate limit)
   server.get('/health', async () => {
     return { status: 'ok', timestamp: new Date().toISOString() };
+  });
+
+  // Request ID middleware (primero, para tracking)
+  server.addHook('onRequest', async (request, reply) => {
+    await requestIdMiddleware(request, reply);
   });
 
   // Logging middleware (aplicar a todas las rutas)

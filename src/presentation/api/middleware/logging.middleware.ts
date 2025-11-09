@@ -15,8 +15,10 @@ export async function loggingMiddleware(
 ) {
   const startTime = Date.now();
 
-  // Log request
+  // Log request con request ID
+  const requestId = (request as any).id || 'unknown';
   request.log.info({
+    requestId,
     method: request.method,
     url: request.url,
     ip: request.ip,
@@ -26,8 +28,10 @@ export async function loggingMiddleware(
   // Hook para log response usando el hook del servidor
   reply.raw.on('finish', () => {
     const duration = Date.now() - startTime;
+    const requestId = (request as any).id || 'unknown';
     
     request.log.info({
+      requestId,
       method: request.method,
       url: request.url,
       statusCode: reply.statusCode,
