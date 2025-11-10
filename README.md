@@ -3,152 +3,149 @@
 ## 🎯 Propuesta de Valor
 
 SoleLab es una plataforma completa que combina:
-- **Generación de diseños** con IA (Stable Diffusion fine-tuned)
+- **Generación de diseños** con IA (Stable Diffusion)
 - **Marketplace** de diseños de sneakers
 - **Blockchain/NFT** para coleccionables digitales
 - **Producción física** mediante partnerships
 - **Comunidad** de diseñadores y coleccionistas
 
-## 🏗️ Arquitectura DDD (Domain-Driven Design)
-
-### Bounded Contexts
-
-1. **Design Generation** - Generación de diseños con IA
-2. **Marketplace** - Compra/venta de diseños
-3. **Blockchain** - Smart contracts para NFTs y ownership
-4. **User Management** - Gestión de usuarios y autenticación
-5. **Production** - Integración con fabricantes
-
-### Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
 SoleLab/
-├── src/
-│   ├── domains/              # Bounded Contexts (DDD)
-│   │   ├── design-generation/
-│   │   ├── marketplace/
-│   │   ├── blockchain/
-│   │   ├── user-management/
-│   │   └── production/
-│   ├── shared/               # Shared Kernel
-│   │   ├── value-objects/
-│   │   ├── events/
-│   │   └── interfaces/
-│   └── infrastructure/       # Infrastructure Layer
-│       ├── ai/
-│       ├── blockchain/
-│       ├── storage/
-│       └── external-apis/
-├── tests/                    # Tests TDD
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
-├── contracts/                # Smart Contracts (Solidity)
-└── docs/                     # Documentación
+├── backend/          # API REST con Fastify + TypeScript
+│   ├── src/          # Código fuente del backend
+│   ├── tests/        # Tests (unit, integration, e2e)
+│   ├── contracts/    # Smart Contracts (Solidity)
+│   └── prisma/       # Schema y migraciones de DB
+│
+├── frontend/         # Frontend Angular
+│   └── src/          # Código fuente del frontend
+│
+└── docs/             # Documentación del proyecto
 ```
 
-## 🧪 Estrategia TDD (Test-Driven Development)
+## 🚀 Inicio Rápido
 
-### Flujo de trabajo TDD
-
-1. **Red** → Escribir test que falle
-2. **Green** → Implementar mínimo código para pasar
-3. **Refactor** → Mejorar código manteniendo tests verdes
-
-### Pirámide de Testing
-
-- **Unit Tests (70%)**: Dominio, Value Objects, Servicios ✅ Implementado
-- **Integration Tests (20%)**: Repositorios, APIs externas ✅ Implementado
-- **E2E Tests (10%)**: Flujos completos de usuario ⏳ Pendiente
-
-### Ejecutar Tests
+### Backend
 
 ```bash
-# Todos los tests
-npm test
-
-# Solo unit tests
-npm run test:unit
-
-# Solo integration tests
-npm run test:integration
-
-# Con cobertura
-npm run test:coverage
+cd backend
+npm install
+npm run dev:api
 ```
 
-## 🔗 Integración Blockchain
+API disponible en: `http://localhost:3001`
+Swagger docs: `http://localhost:3001/api-docs`
 
-### Smart Contracts
+### Frontend
 
-- **SoleNFT.sol**: Contrato ERC-721 para NFTs de diseños
-- **SoleMarketplace.sol**: Marketplace descentralizado
-- **SoleRoyalties.sol**: Sistema de royalties para creadores
+```bash
+cd frontend
+npm install
+ng serve
+```
 
-### Tecnologías
+Frontend disponible en: `http://localhost:4200`
 
-- **Solidity** para smart contracts
-- **Hardhat** para desarrollo y testing
-- **Ethers.js** para integración frontend/backend
-- **IPFS** para almacenamiento descentralizado de metadatos
+## 🏗️ Arquitectura
 
-## 🚀 Roadmap
+### Backend (DDD + TDD)
+- **Domain-Driven Design** con Bounded Contexts
+- **Test-Driven Development** con Jest
+- **Fastify** para API REST
+- **Prisma + PostgreSQL** para persistencia
+- **JWT** para autenticación
 
-### Fase 1: MVP (Mes 1-2)
-- [x] Generación básica de diseños con IA ✅
-- [x] Smart contract básico (ERC-721) ✅
-- [x] API REST con Fastify ✅
-- [x] Base de datos con Prisma ✅
-- [x] Tests unitarios e integration ✅
-- [ ] Frontend simple para generar y ver diseños
+### Frontend (Angular)
+- **Angular 17+** con standalone components
+- **RxJS** para programación reactiva
+- **Three.js** para visualización 3D
+- **Guards e Interceptors** para autenticación
 
-### Fase 2: Marketplace (Mes 3-4)
-- [ ] Sistema de compra/venta
-- [ ] Integración con wallet (MetaMask)
-- [ ] Perfiles de usuario
+## 📚 Documentación
 
-### Fase 3: Comunidad (Mes 5-6)
-- [ ] Sistema de votación
-- [ ] Rankings y trending
-- [ ] Social features
-
-### Fase 4: Producción (Mes 7+)
-- [ ] Integración con fabricantes
-- [ ] Sistema de pedidos
-- [ ] Tracking de producción
+Ver carpeta `docs/` para documentación detallada:
+- `DDD_STRATEGY.md` - Estrategia Domain-Driven Design
+- `TDD_STRATEGY.md` - Estrategia Test-Driven Development
+- `BLOCKCHAIN_STRATEGY.md` - Integración Blockchain
+- `BACKEND_COMPLETE.md` - Estado del backend
+- `DEVELOPMENT_GUIDE.md` - Guía de desarrollo
 
 ## 🛠️ Stack Tecnológico
 
 ### Backend
-- **Node.js + TypeScript**
-- **Fastify** para API REST ✅ Implementado
-- **Prisma + PostgreSQL** para base de datos ✅ Implementado
-- **Stable Diffusion API** para generación de imágenes ✅ Implementado
+- Node.js + TypeScript
+- Fastify
+- Prisma + PostgreSQL
+- Stable Diffusion API
+- JWT Authentication
 
 ### Frontend
-- **React + TypeScript**
-- **Next.js** para SSR
-- **Web3.js/Ethers.js** para blockchain
-- **Tailwind CSS** para UI
+- Angular 17+
+- TypeScript
+- Three.js
+- RxJS
 
 ### Blockchain
-- **Solidity**
-- **Hardhat**
-- **Ethereum/Polygon** (L2 para costos bajos)
+- Solidity
+- Hardhat
+- Ethers.js
 
-### Testing
-- **Jest** para unit tests
-- **Supertest** para API tests
-- **Hardhat** para contract tests
+## 📝 Endpoints API
 
-## 📚 Documentación
+### Autenticación
+- `POST /api/v1/auth/register` - Registro
+- `POST /api/v1/auth/login` - Login
 
-Ver `/docs` para documentación detallada:
-- **[ARCHITECTURE_DECISIONS.md](./docs/ARCHITECTURE_DECISIONS.md)** - Decisiones de diseño
-- **[DDD_STRATEGY.md](./docs/DDD_STRATEGY.md)** - Estrategia DDD
-- **[TDD_STRATEGY.md](./docs/TDD_STRATEGY.md)** - Estrategia TDD
-- **[DEVELOPMENT_GUIDE.md](./docs/DEVELOPMENT_GUIDE.md)** - Guía de desarrollo
-- **[DATABASE.md](./docs/DATABASE.md)** - PostgreSQL + Prisma
-- **[BLOCKCHAIN_STRATEGY.md](./docs/BLOCKCHAIN_STRATEGY.md)** - Estrategia blockchain
+### Diseños
+- `POST /api/v1/designs` - Generar diseño (requiere auth)
+- `GET /api/v1/designs` - Listar diseños (requiere auth)
+- `GET /api/v1/designs/:id` - Obtener diseño (requiere auth)
 
+## 🧪 Tests
 
+```bash
+# Backend
+cd backend
+npm test              # Todos los tests
+npm run test:unit     # Solo unit tests
+npm run test:integration  # Solo integration tests
+
+# Frontend
+cd frontend
+ng test
+```
+
+## 📦 Variables de Entorno
+
+### Backend (.env)
+```env
+DATABASE_URL=postgresql://...
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=7d
+STABLE_DIFFUSION_API_KEY=...
+PORT=3001
+FRONTEND_URL=http://localhost:4200
+```
+
+### Frontend (environment.ts)
+```typescript
+export const environment = {
+  apiUrl: 'http://localhost:3001/api/v1'
+};
+```
+
+## 🚧 Roadmap
+
+- [x] Backend con DDD y TDD
+- [x] Autenticación JWT
+- [x] API REST completa
+- [ ] Frontend Angular básico
+- [ ] Integración Blockchain/NFTs
+- [ ] Marketplace
+- [ ] Producción física
+
+## 📄 Licencia
+
+MIT
