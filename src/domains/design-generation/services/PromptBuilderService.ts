@@ -39,7 +39,6 @@ export class PromptBuilderService {
       colorPrompt,
       qualityPrompt,
       'sneaker, shoe, footwear',
-      'futuristic design, innovative',
     ].filter(Boolean).join(', ');
 
     return prompt;

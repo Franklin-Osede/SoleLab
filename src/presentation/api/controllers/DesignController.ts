@@ -27,10 +27,19 @@ export class DesignController {
     try {
       // Los datos ya están validados por el middleware
       const validated = (request as any).validated;
+      
+      // userId se obtiene del token JWT (agregado por authMiddleware)
+      const userId = (request as any).userId;
+      if (!userId) {
+        return reply.status(401).send({
+          error: 'Unauthorized',
+          message: 'User ID not found in token',
+        });
+      }
 
       // Llamar caso de uso
       const result = await this.generateDesignUseCase.execute({
-        userId: validated.userId,
+        userId,
         basePrompt: validated.basePrompt,
         style: validated.style,
         colors: validated.colors,

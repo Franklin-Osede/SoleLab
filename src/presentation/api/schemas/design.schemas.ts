@@ -10,7 +10,7 @@ import { z } from 'zod';
  * - Separación de concerns: validación HTTP vs validación de dominio
  */
 export const GenerateDesignSchema = z.object({
-  userId: z.string().uuid('Invalid user ID format'),
+  // userId se obtiene del token JWT, no del body
   basePrompt: z.string().min(1, 'Prompt cannot be empty').max(500, 'Prompt too long'),
   style: z.enum(['futuristic', 'retro', 'minimalist', 'sporty', 'luxury', 'streetwear'], {
     errorMap: () => ({ message: 'Invalid style. Must be one of: futuristic, retro, minimalist, sporty, luxury, streetwear' }),

@@ -1,9 +1,16 @@
 import { PrismaDesignRepository } from '../database/repositories/PrismaDesignRepository';
+import { PrismaUserRepository } from '../database/repositories/PrismaUserRepository';
 import { DesignGenerationService } from '../../domains/design-generation/services/DesignGenerationService';
 import { PromptBuilderService } from '../../domains/design-generation/services/PromptBuilderService';
+import { AuthService } from '../../domains/user-management/services/AuthService';
+import { UserRegistrationService } from '../../domains/user-management/services/UserRegistrationService';
 import { StableDiffusionService } from '../ai/StableDiffusionService';
+import { JwtService } from '../auth/JwtService';
 import { GenerateDesignUseCase } from '../../application/use-cases/GenerateDesignUseCase';
+import { RegisterUserUseCase } from '../../application/use-cases/RegisterUserUseCase';
+import { LoginUseCase } from '../../application/use-cases/LoginUseCase';
 import { DesignController } from '../../presentation/api/controllers/DesignController';
+import { AuthController } from '../../presentation/api/controllers/AuthController';
 import { prisma } from '../database/PrismaClient';
 
 /**
@@ -44,20 +51,35 @@ container.register('PrismaClient', () => prisma);
 container.register('PrismaDesignRepository', () => {
   return new PrismaDesignRepository(container.get('PrismaClient'));
 });
+container.register('PrismaUserRepository', () => {
+  return new PrismaUserRepository(container.get('PrismaClient'));
+});
 container.register('StableDiffusionService', () => {
   return new StableDiffusionService(
     process.env.STABLE_DIFFUSION_API_URL || 'http://localhost:7860',
     process.env.STABLE_DIFFUSION_API_KEY
   );
 });
+container.register('JwtService', () => {
+  return new JwtService();
+});
 
 // Domain Services
 container.register('PromptBuilderService', () => {
   return new PromptBuilderService();
 });
+container.register('AuthService', () => {
+  return new AuthService();
+});
 container.register('DesignGenerationService', () => {
   return new DesignGenerationService(
     container.get('PrismaDesignRepository')
+  );
+});
+container.register('UserRegistrationService', () => {
+  return new UserRegistrationService(
+    container.get('PrismaUserRepository'),
+    container.get('AuthService')
   );
 });
 
@@ -69,12 +91,30 @@ container.register('GenerateDesignUseCase', () => {
     container.get('StableDiffusionService')
   );
 });
+container.register('RegisterUserUseCase', () => {
+  return new RegisterUserUseCase(
+    container.get('UserRegistrationService')
+  );
+});
+container.register('LoginUseCase', () => {
+  return new LoginUseCase(
+    container.get('PrismaUserRepository'),
+    container.get('AuthService'),
+    container.get('JwtService')
+  );
+});
 
 // Presentation Controllers
 container.register('DesignController', () => {
   return new DesignController(
     container.get('GenerateDesignUseCase'),
     container.get('DesignGenerationService')
+  );
+});
+container.register('AuthController', () => {
+  return new AuthController(
+    container.get('RegisterUserUseCase'),
+    container.get('LoginUseCase')
   );
 });
 

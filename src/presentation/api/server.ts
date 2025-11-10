@@ -3,6 +3,8 @@ import cors from '@fastify/cors';
 import compress from '@fastify/compress';
 import helmet from '@fastify/helmet';
 import { designRoutes } from './routes/design.routes';
+import { authRoutes } from './routes/auth.routes';
+import { AuthController } from './controllers/AuthController';
 import { errorHandler } from './middleware/error-handler.middleware';
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';
 import { loggingMiddleware } from './middleware/logging.middleware';
@@ -78,6 +80,13 @@ export async function createServer() {
   server.setErrorHandler(errorHandler);
 
   // Routes
+  // Auth routes (sin autenticación requerida)
+  await server.register(authRoutes, {
+    prefix: '/api/v1/auth',
+    authController: container.get<AuthController>('AuthController'),
+  });
+
+  // Design routes (requieren autenticación)
   await server.register(designRoutes, { prefix: '/api/v1/designs' });
 
   return server;

@@ -38,19 +38,22 @@ model Design {
   @@map("designs")
 }
 
-// Modelo de User (futuro)
+// Modelo de User
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  username  String   @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String   // Hash de la contraseña (bcrypt)
   walletAddress String? // Dirección de wallet blockchain
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relaciones
   // designs    Design[]
   // listings   Listing[]
 
+  @@index([email])
+  @@index([username])
   @@map("users")
 }
 

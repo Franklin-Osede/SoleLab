@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { DesignController } from '../controllers/DesignController';
 import { container } from '../../../infrastructure/dependency-injection/container';
 import { validateRequest } from '../middleware/validation.middleware';
+import { authMiddleware } from '../middleware/auth.middleware';
 import { GenerateDesignSchema, GetDesignByIdSchema, GetUserDesignsSchema } from '../schemas/design.schemas';
 
 /**
@@ -15,19 +16,19 @@ import { GenerateDesignSchema, GetDesignByIdSchema, GetUserDesignsSchema } from 
 export async function designRoutes(fastify: FastifyInstance) {
   const designController = container.get<DesignController>('DesignController');
 
-  // POST /api/v1/designs - Generar nuevo diseño
+  // POST /api/v1/designs - Generar nuevo diseño (requiere autenticación)
   fastify.post(
     '/',
     {
-      preHandler: validateRequest(GenerateDesignSchema),
+      preHandler: [authMiddleware, validateRequest(GenerateDesignSchema)],
       schema: {
         description: 'Generate a new sneaker design using AI',
         tags: ['designs'],
+        security: [{ bearerAuth: [] }],
         body: {
           type: 'object',
-          required: ['userId', 'basePrompt', 'style', 'colors'],
+          required: ['basePrompt', 'style', 'colors'],
           properties: {
-            userId: { type: 'string', format: 'uuid' },
             basePrompt: { type: 'string', minLength: 1, maxLength: 500 },
             style: { type: 'string', enum: ['futuristic', 'retro', 'minimalist', 'sporty', 'luxury', 'streetwear'] },
             colors: { type: 'array', items: { type: 'string', pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$' } },
@@ -53,31 +54,43 @@ export async function designRoutes(fastify: FastifyInstance) {
     }
   );
 
-  // GET /api/v1/designs/:id - Obtener diseño por ID
+  // GET /api/v1/designs/:id - Obtener diseño por ID (requiere autenticación)
   fastify.get(
     '/:id',
-    { preHandler: validateRequest(GetDesignByIdSchema) },
+    { 
+      preHandler: [authMiddleware, validateRequest(GetDesignByIdSchema)],
+      schema: {
+        security: [{ bearerAuth: [] }],
+      },
+    },
     async (request: FastifyRequest, reply: FastifyReply) => {
       return designController.getDesignById(request, reply);
     }
   );
 
-  // GET /api/v1/designs/user/:userId - Obtener diseños de usuario
+  // GET /api/v1/designs/user/:userId - Obtener diseños de usuario (requiere autenticación)
   fastify.get(
     '/user/:userId',
-    { preHandler: validateRequest(GetUserDesignsSchema) },
+    { 
+      preHandler: [authMiddleware, validateRequest(GetUserDesignsSchema)],
+      schema: {
+        security: [{ bearerAuth: [] }],
+      },
+    },
     async (request: FastifyRequest, reply: FastifyReply) => {
       return designController.getUserDesigns(request, reply);
     }
   );
 
-  // GET /api/v1/designs - Listar todos los diseños (con paginación y filtros)
+  // GET /api/v1/designs - Listar todos los diseños (requiere autenticación)
   fastify.get(
     '/',
     {
+      preHandler: [authMiddleware],
       schema: {
         description: 'List all designs with pagination and filters',
         tags: ['designs'],
+        security: [{ bearerAuth: [] }],
         querystring: {
           type: 'object',
           properties: {

@@ -26,9 +26,19 @@ export async function setupSwagger(server: FastifyInstance) {
         },
       ],
       tags: [
+        { name: 'auth', description: 'Authentication endpoints' },
         { name: 'designs', description: 'Design generation endpoints' },
         { name: 'health', description: 'Health check endpoints' },
       ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
     },
   });
 
